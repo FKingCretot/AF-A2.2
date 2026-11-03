@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A2.2 · S1b · Ma maison de rêve</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1F3A5F;--coral:#D9534F;--light:#EEF3F8;--sun:#F4B740;--green:#5E9E4F;--ink:#22303f;--grey:#6b7785;--cream:#fbfaf7}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#13243b;font-family:Nunito,system-ui,sans-serif;color:var(--ink)}
+#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#stage{width:1280px;height:720px;position:relative;transform-origin:center center;background:var(--cream);border-radius:18px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
+.slide{position:absolute;inset:0;padding:56px 72px 80px;display:flex;flex-direction:column;opacity:0;pointer-events:none;transform:translateX(60px);transition:opacity .45s ease,transform .45s ease}
+.slide.active{opacity:1;pointer-events:auto;transform:none}
+.slide.prev{transform:translateX(-60px)}
+.brand{position:absolute;left:72px;bottom:26px;font-size:15px;color:var(--grey)}
+.brand b{color:var(--navy)}
+.tag{align-self:flex-start;background:var(--coral);color:#fff;border-radius:22px;padding:5px 18px;font-size:18px;font-weight:800;margin-bottom:14px}
+.edito{align-self:flex-start;background:var(--light);color:var(--navy);border-radius:10px;padding:4px 12px;font-size:17px;font-weight:700;margin-top:6px}
+h1{font-size:84px;font-weight:900;color:var(--navy);line-height:1.02}
+h2{font-size:52px;font-weight:900;color:var(--navy);line-height:1.08;margin-bottom:10px}
+p,li{font-size:28px;line-height:1.4}
+.sub{font-size:30px;color:var(--coral);font-weight:800;margin-top:12px}
+.center{align-items:center;justify-content:center;text-align:center}
+.frag{opacity:0;transform:translateY(24px) scale(.97);transition:opacity .4s ease,transform .4s cubic-bezier(.2,1.4,.4,1)}
+.frag.on{opacity:1;transform:none}
+.hl-qui{color:#fff;background:var(--coral);border-radius:8px;padding:0 8px;font-weight:900}
+.hl-que{color:#fff;background:var(--navy);border-radius:8px;padding:0 8px;font-weight:900}
+.hl-ou{color:#222;background:var(--sun);border-radius:8px;padding:0 8px;font-weight:900}
+.box{background:#fff;border-radius:20px;padding:24px 30px;box-shadow:0 4px 18px rgba(0,0,0,.07)}
+.row{display:flex;gap:24px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+/* flip cards */
+.flip{perspective:900px;height:150px;cursor:pointer}
+.flip .in{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.3,1.3,.5,1);transform-style:preserve-3d}
+.flip.done .in{transform:rotateY(180deg)}
+.flip .f,.flip .b{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;font-size:27px;font-weight:800}
+.flip .f{background:#fff;color:var(--navy);box-shadow:0 4px 18px rgba(0,0,0,.08);border:3px solid var(--light)}
+.flip .b{background:var(--green);color:#fff;transform:rotateY(180deg);font-size:44px}
+.flip:hover .f{border-color:var(--sun)}
+/* steps */
+.step{display:flex;align-items:center;gap:22px;background:#fff;border-radius:18px;padding:14px 24px;margin-bottom:12px;box-shadow:0 3px 12px rgba(0,0,0,.06)}
+.step .n{flex:0 0 54px;height:54px;border-radius:50%;background:var(--coral);color:#fff;font-size:28px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.step p{font-size:25px}
+.step b{color:var(--navy)}
+.bubble{background:#fff;border-radius:22px;padding:16px 22px;font-size:24px;box-shadow:0 3px 12px rgba(0,0,0,.07);border-left:7px solid var(--sun)}
+.strike{position:relative;display:inline-block;color:var(--coral);font-weight:900}
+.strike::after{content:"";position:absolute;left:-4px;right:-4px;top:52%;height:5px;background:var(--ink);border-radius:3px;transform:scaleX(0);transform-origin:left;transition:transform .5s ease .2s}
+.frag.on .strike::after,.strike.on::after{transform:scaleX(1)}
+/* guess cards */
+.guess{display:flex;gap:34px;align-items:stretch;height:100%}
+.guess .pic{flex:0 0 640px;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.18);background:#cfe3d4}
+.guess .pic img{width:100%;height:100%;object-fit:cover;display:block}
+.guess .pic img.contain{object-fit:contain}
+.guess .side{flex:1;display:flex;flex-direction:column;justify-content:center;gap:24px}
+.guess .num{font-size:74px;font-weight:900;color:var(--coral);line-height:1}
+.guess .phrase{font-size:32px;font-weight:700;line-height:1.35}
+.stamp{align-self:flex-start;font-size:46px;font-weight:900;padding:8px 26px;border-radius:16px;border:5px solid;transform:rotate(-6deg) scale(2.2);opacity:0;transition:transform .45s cubic-bezier(.2,1.6,.4,1),opacity .3s}
+.stamp.on{transform:rotate(-6deg) scale(1);opacity:1}
+.mtp{color:#b86a00;border-color:#e89a2e;background:#fff3df}
+.caen{color:#2f6b22;border-color:#5E9E4F;background:#e6f4e1}
+.both{color:var(--navy);border-color:var(--navy);background:var(--light)}
+.en{font-size:19px;font-style:italic;color:var(--grey);margin-top:6px}
+.bubble{padding:12px 20px!important;font-size:22px!important}
+.hint{font-size:17px;color:var(--grey)}
+/* vote */
+.vote{flex:1;border:0;border-radius:24px;font-family:inherit;font-size:40px;font-weight:900;color:#fff;cursor:pointer;padding:30px;transition:transform .15s}
+.vote:active{transform:scale(.95)}
+.vote span{display:block;font-size:90px;line-height:1.1}
+/* roles */
+.role{flex:1;background:#fff;border-radius:22px;padding:26px 30px;box-shadow:0 4px 18px rgba(0,0,0,.07);border-top:10px solid var(--coral)}
+.role h3{font-size:36px;color:var(--navy);margin-bottom:10px}
+.role li{font-size:25px;margin:8px 0 0 26px}
+/* controls */
+#bar{position:absolute;left:0;bottom:0;height:7px;background:var(--coral);transition:width .4s ease}
+#ctrl{position:absolute;right:26px;bottom:18px;display:flex;gap:10px;align-items:center;z-index:5}
+#ctrl button{width:46px;height:46px;border-radius:50%;border:0;background:var(--navy);color:#fff;font-size:22px;cursor:pointer}
+#ctrl button:hover{background:var(--coral)}
+#count{font-size:15px;color:var(--grey);min-width:54px;text-align:center}
+.confetti{position:absolute;font-size:30px;pointer-events:none;z-index:20;animation:fall 1.4s ease-out forwards}
+@keyframes fall{from{transform:translate(0,0) rotate(0)}to{transform:translate(var(--dx),var(--dy)) rotate(var(--r));opacity:0}}
+.pop{animation:pop .6s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes pop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.float{animation:float 3s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}
+
+.hl-y{color:#fff;background:var(--green);border-radius:8px;padding:0 8px;font-weight:900}
+.flip.big{height:170px}
+.flip.big .f{font-size:24px;font-weight:700;line-height:1.35}
+.flip .b.ans{flex-direction:column;gap:6px;font-size:54px;background:var(--navy)}
+.flip .b.ans span{font-size:30px;font-weight:900}
+.fix p{font-size:30px}
+.tr2{font-size:20px;font-weight:600;font-style:italic;color:var(--grey);margin-left:10px}
+.ex{font-size:20px!important;font-style:italic;color:var(--grey);margin-top:10px}
+.fix .ok{margin-top:6px;color:var(--green);font-weight:800}
+#picked.roll{color:var(--grey)}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+<!-- 1 TITRE -->
+<section class="slide center">
+  <div class="tag" style="align-self:center">S1b · Mardi 3 novembre</div>
+  <div class="float" style="font-size:90px">🏡✨</div>
+  <h1>Ma maison de rêve<br>en France</h1>
+  <p class="sub">Unité 3 · Comme à la maison</p>
+  <div class="edito" style="align-self:center">Édito A2 · p. 44, 45 et 49</div>
+</section>
+
+<!-- 2 ACCUEIL -->
+<section class="slide center">
+  <div class="float" style="font-size:80px">💬</div>
+  <h2>Et toi ?</h2>
+  <p style="font-size:40px;font-weight:800;color:var(--coral)">Qu'est-ce que tu as fait ce week-end ?</p>
+</section>
+
+<!-- 3 OUPS CANNES -->
+<section class="slide center">
+  <div class="tag" style="align-self:center">Oups !</div>
+  <p style="font-size:34px">Samedi, on a parlé de Montpellier et de…</p>
+  <p style="font-size:64px;font-weight:900;margin-top:10px"><span class="strike on" style="color:var(--ink)">Caen</span></p>
+  <p class="frag" style="font-size:96px;font-weight:900;color:var(--coral);line-height:1.1">🌴 Cannes ! 🌴</p>
+  <p class="frag" style="margin-top:14px">Christophe, c'est une ville <span class="hl-ou">où</span> tu as envie d'habiter ? Pourquoi ?</p>
+</section>
+
+<!-- 4 ECHAUFFEMENT -->
+<section class="slide">
+  <div class="tag">1 · Échauffement</div>
+  <h2 style="font-size:44px">Qu'est-ce que c'est ?</h2>
+  <p style="margin-bottom:16px">Lis la devinette, trouve le mot… et clique ! <span class="hint">Édito p. 49</span></p>
+  <div class="grid3">
+    <div class="flip big"><div class="in"><div class="f"><div>C'est un appareil <span class="hl-que">qu'</span>on utilise pour faire un gâteau.</div></div><div class="b ans">🍰<span>le four</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>On <span class="hl-y">y</span> met le fromage et le lait.</div></div><div class="b ans">🧀<span>le frigo</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>C'est une pièce <span class="hl-ou">où</span> on dort.</div></div><div class="b ans">🛏️<span>la chambre</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>C'est un meuble <span class="hl-qui">qui</span> a deux ou trois places.</div></div><div class="b ans">🛋️<span>le canapé</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>On <span class="hl-y">y</span> garde le vin.</div></div><div class="b ans">🍷<span>la cave</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>C'est une pièce <span class="hl-ou">où</span> on lave le linge.</div></div><div class="b ans">🧺<span>la buanderie</span></div></div></div>
+  </div>
+</section>
+
+<!-- 5 A TOI DEVINETTE -->
+<section class="slide center">
+  <div class="tag" style="align-self:center">À toi !</div>
+  <div class="float" style="font-size:80px">🤔</div>
+  <h2>Invente une devinette</h2>
+  <p>Choisis un début de phrase. Le groupe devine !</p>
+  <div class="row" style="margin-top:24px;justify-content:center">
+    <div class="box frag"><p>C'est une pièce <span class="hl-ou">où</span>…</p><p class="ex">C'est une pièce où on prend une douche.<br>→ la salle de bain</p></div>
+    <div class="box frag"><p>C'est un objet <span class="hl-que">qu'</span>on…</p><p class="ex">C'est un objet qu'on utilise pour faire le café.<br>→ la machine à café</p></div>
+    <div class="box frag"><p>On <span class="hl-y">y</span>…</p><p class="ex">On y met la voiture.<br>→ le garage</p></div>
+  </div>
+</section>
+
+<!-- 6 PRESENTATIONS CONSIGNE -->
+<section class="slide">
+  <div class="tag">2 · Ma maison de rêve</div>
+  <h2>À toi de présenter !</h2>
+  <div style="display:flex;flex-direction:column;gap:14px;margin-top:14px">
+    <div class="step frag"><div class="n">🏡</div><p><b>Tu présentes</b> ta maison de rêve en France (2 ou 3 minutes).</p></div>
+    <div class="step frag"><div class="n">❓</div><p><b>Les autres</b> posent 2 questions.</p></div>
+    <div class="step frag"><div class="n">🔁</div><p><b>Un camarade résume</b> : « La maison de…, c'est une maison <span class="hl-qui">qui</span>… <span class="hl-ou">où</span>… »</p></div>
+  </div>
+</section>
+
+<!-- 7 QUESTIONS DE RELANCE -->
+<section class="slide">
+  <div class="tag">2 · Ma maison de rêve</div>
+  <h2 style="font-size:44px">Pose une question !</h2>
+  <p style="margin-bottom:16px">Ton ou ta camarade a présenté sa maison. Pose-lui <b>une question</b>. <span class="hint">(clic sur la carte quand la question est posée)</span></p>
+  <div class="grid3">
+    <div class="flip"><div class="in"><div class="f"><div>Elle est où, ta maison ?</div></div><div class="b">✓</div></div></div>
+    <div class="flip"><div class="in"><div class="f"><div>Il y a combien de chambres ?</div></div><div class="b">✓</div></div></div>
+    <div class="flip"><div class="in"><div class="f"><div>Qu'est-ce qu'il y a dans le jardin ?</div></div><div class="b">✓</div></div></div>
+    <div class="flip"><div class="in"><div class="f"><div>Qu'est-ce que tu fais le matin ?</div></div><div class="b">✓</div></div></div>
+    <div class="flip"><div class="in"><div class="f"><div>Qui vient te voir ?</div></div><div class="b">✓</div></div></div>
+    <div class="flip"><div class="in"><div class="f"><div>Pourquoi cette région ?</div></div><div class="b">✓</div></div></div>
+  </div>
+</section>
+
+<!-- 8 QUI RESUME -->
+<section class="slide center">
+  <div class="tag" style="align-self:center">2 · Ma maison de rêve</div>
+  <h2>Qui résume ?</h2>
+  <p>Le dé choisit une personne. Elle résume la maison qu'elle vient d'écouter.</p>
+  <div id="picked" class="box" style="font-size:64px;font-weight:900;color:var(--navy);min-width:520px;margin:18px 0">?</div>
+  <button id="pick" class="vote" style="flex:0;background:var(--coral);font-size:30px;padding:16px 40px">🎲 Tirer au sort</button>
+  <p style="margin-top:22px">« La maison de…, c'est une maison <span class="hl-qui">qui</span> est en Provence, <span class="hl-ou">où</span> il y a une piscine. »</p>
+</section>
+
+<!-- 9 QUI HABITE OU -->
+<section class="slide">
+  <div class="tag">3 · Le jeu</div>
+  <h2 style="font-size:44px">Qui habite où ?</h2>
+  <p style="margin-bottom:16px">Écoute l'indice. C'est la maison de qui ?</p>
+  <div class="grid3">
+    <!-- INDICES : Britt + Mary Ellen ; Christophe et Patricia à compléter -->
+    <div class="flip big"><div class="in"><div class="f"><div>C'est une petite maison <span class="hl-qui">qui</span> a un grand jardin… et des poulets ! 🐔</div></div><div class="b ans">🏡<span>Britt</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>C'est une maison claire <span class="hl-qui">qui</span> est près des magasins.</div></div><div class="b ans">🏡<span>Mary Ellen</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>C'est une cuisine <span class="hl-ou">où</span> on peut faire cuire au four, et il y a des chambres pour toute la famille.</div></div><div class="b ans">🏡<span>Britt</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>C'est un jardin <span class="hl-ou">où</span> on écoute les oiseaux tôt le matin. 🐦</div></div><div class="b ans">🏡<span>Mary Ellen</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>Piège ! C'est un quartier <span class="hl-ou">où</span> on peut faire du vélo. 🚲</div></div><div class="b ans">🏡<span>Les deux !</span></div></div></div>
+    <div class="flip big"><div class="in"><div class="f"><div>Christophe ou Patricia ? <span class="hint">(à compléter)</span></div></div><div class="b ans">🏡<span>…</span></div></div></div>
+  </div>
+</section>
+
+<!-- 10 CORRECTION EXPRESS -->
+<section class="slide">
+  <div class="tag">4 · Correction express</div>
+  <h2 style="font-size:44px">On dit…</h2>
+  <p class="hint" style="margin-bottom:14px">Clic : la phrase, puis la correction.</p>
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="box frag fix"><p>❌ Le quartier <u>ou</u> je peux faire du vélo.</p><p class="frag ok">✅ Le quartier <span class="hl-ou">où</span> je peux faire du vélo. <span class="tr2">ou = or · où = where</span></p></div>
+    <div class="box frag fix"><p>❌ La maison <u>que</u> je rêve.</p><p class="frag ok">✅ La maison <b>de mes rêves</b>. <span class="tr2">rêver <b>de</b> = to dream <b>of</b></span></p></div>
+    <div class="box frag fix"><p>✍️ À l'écrit : je veux pas conduire.</p><p class="frag ok">✅ Je <b>ne</b> veux pas conduire. <span class="tr2">À l'oral, « je veux pas » : OK !</span></p></div>
+  </div>
+</section>
+
+<!-- 11 BONUS PRONONCIATION -->
+<section class="slide center">
+  <div class="tag" style="align-self:center">Bonus · Prononciation</div>
+  <div class="float" style="font-size:80px">👄</div>
+  <h2>Le son [ɥ]</h2>
+  <p class="hint">Édito p. 52 · lèvres arrondies, comme pour « u »</p>
+  <p style="font-size:44px;font-weight:800;margin-top:18px">huit · cuisine · bruit · nuit</p>
+  <div class="box frag" style="margin-top:24px"><p style="font-size:36px;font-weight:800;color:var(--coral)">« Huit huîtres cuites dans la cuisine,<br>sans bruit, la nuit ! »</p><p class="frag en" style="font-size:24px;margin-top:8px">🇺🇸 Eight cooked oysters in the kitchen, without a sound, at night!</p></div>
+</section>
+
+<!-- 12 POUR SAMEDI -->
+<section class="slide">
+  <div class="tag">Pour samedi · S2a</div>
+  <h2>Montpellier ou Cannes ? 🌴</h2>
+  <p class="sub" style="margin-top:0">La comparaison : plus… que, moins… que, aussi… que</p>
+  <div class="row" style="margin-top:18px">
+    <div class="box frag" style="flex:1"><p style="font-weight:900;color:var(--navy)">📖 Édito</p><ul style="margin:10px 0 0 28px">
+      <li style="font-size:24px">p. 52 · l'essentiel, ex. 1</li>
+      <li style="font-size:24px">p. 44 · ex. 3</li>
+      <li style="font-size:24px">À lire : p. 47, la comparaison</li></ul></div>
+    <div class="box frag" style="flex:1.2"><p style="font-weight:900;color:var(--navy)">🔎 Petite mission</p>
+      <p style="font-size:24px;margin-top:10px">Trouve <b>une information</b> sur Cannes ou sur Montpellier : le climat, la plage, un monument, un plat…</p>
+      <p style="font-size:24px;margin-top:10px">Samedi, on compare !</p></div>
+  </div>
+</section>
+
+<div class="brand"><b>KingCretot Experience</b> · Alliance Française de Sarasota · A2.2</div>
+<div id="bar"></div>
+<div id="ctrl"><button id="prev" title="Précédent">‹</button><span id="count"></span><button id="next" title="Suivant">›</button></div>
+</div></div>
+<script>
+const stage=document.getElementById('stage');
+function fit(){const s=Math.min(innerWidth/1280,innerHeight/720)*0.98;stage.style.transform='scale('+s+')';}
+addEventListener('resize',fit);fit();
+const slides=[...document.querySelectorAll('.slide')];let i=0;
+// fragments: .frag plus .frag-stamp (stamps)
+function frags(s){return [...s.querySelectorAll('.frag,.frag-stamp')];}
+function show(n,dir){
+  slides.forEach((s,k)=>{s.classList.toggle('active',k===n);s.classList.toggle('prev',k<n);});
+  i=n;document.getElementById('count').textContent=(n+1)+' / '+slides.length;
+  document.getElementById('bar').style.width=((n+1)/slides.length*100)+'%';
+  if(dir===-1){frags(slides[n]).forEach(f=>f.classList.add('on'));}
+}
+function next(){const f=frags(slides[i]).find(x=>!x.classList.contains('on'));
+  if(f){f.classList.add('on');if(f.classList.contains('frag-stamp'))burst(f);return;}
+  if(i<slides.length-1){frags(slides[i+1]).forEach(x=>x.classList.remove('on'));show(i+1,1);}}
+function prev(){if(i>0)show(i-1,-1);}
+document.getElementById('next').onclick=e=>{e.stopPropagation();next();};
+document.getElementById('prev').onclick=e=>{e.stopPropagation();prev();};
+addEventListener('keydown',e=>{if(['ArrowRight',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();next();}if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();prev();}});
+document.querySelectorAll('.flip').forEach(c=>c.onclick=e=>{e.stopPropagation();c.classList.toggle('done');if(c.classList.contains('done'))burst(c,['⭐','✨','👏']);});
+const votes={m:0,c:0};
+document.querySelectorAll('.vote').forEach(b=>b.onclick=e=>{e.stopPropagation();votes[b.dataset.v]++;const el=document.getElementById('v'+b.dataset.v);el.textContent=votes[b.dataset.v];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');burst(b,b.dataset.v==='m'?['☀️','🌊','🍷']:['🍎','🧀','🏰']);});
+function burst(el,set){set=set||['🎉','⭐','✨','🇫🇷'];const r=el.getBoundingClientRect(),sr=stage.getBoundingClientRect(),sc=sr.width/1280;
+  const x=(r.left+r.width/2-sr.left)/sc,y=(r.top+r.height/2-sr.top)/sc;
+  for(let k=0;k<14;k++){const d=document.createElement('div');d.className='confetti';d.textContent=set[k%set.length];
+    d.style.left=x+'px';d.style.top=y+'px';d.style.setProperty('--dx',(Math.random()*360-180)+'px');d.style.setProperty('--dy',(Math.random()*260-200)+'px');d.style.setProperty('--r',(Math.random()*400-200)+'deg');
+    stage.appendChild(d);setTimeout(()=>d.remove(),1500);}}
+show(0,1);
+</script>
+<script>
+(function(){const names=['Britt','Christophe','Mary Ellen','Patricia'];let last=null;
+document.getElementById('pick').onclick=function(e){e.stopPropagation();const el=document.getElementById('picked');let n=0;el.classList.add('roll');
+const t=setInterval(()=>{el.textContent=names[n++%names.length];if(n>14){clearInterval(t);let c;do{c=names[Math.floor(Math.random()*names.length)];}while(c===last);last=c;el.textContent=c;el.classList.remove('roll');el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');burst(el);}},90);};})();
+</script>
+</body>
+</html>
